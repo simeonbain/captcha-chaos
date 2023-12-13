@@ -6,7 +6,8 @@ export enum Screen {
   Traditional,
   Wally,
   TicTacToe,
-  GeoGuesser
+  GeoGuesser,
+  End
 }
 
 const nextScreenFromCurrentScreen = (currentScreen: Screen) => {
@@ -22,11 +23,13 @@ const nextScreenFromCurrentScreen = (currentScreen: Screen) => {
     case Screen.Wally:
       return Screen.GeoGuesser;
     case Screen.GeoGuesser:
-      return Screen.Start;
+      return Screen.End;
+    case Screen.End:
+      return Screen.TickTheBox;
   }
 };
 
 export const useScreen = (): [Screen, () => void] => {
-  const [screen, setScreen] = useState(Screen.GeoGuesser);
+  const [screen, setScreen] = useState(Screen.Start);
   return [screen, () => setScreen(nextScreenFromCurrentScreen(screen))];
 };
