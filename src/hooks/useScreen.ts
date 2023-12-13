@@ -3,6 +3,7 @@ import { useState } from "react";
 export enum Screen {
   Start,
   TickTheBox,
+  Traditional
 }
 
 const nextScreenFromCurrentScreen = (currentScreen: Screen) => {
@@ -10,6 +11,8 @@ const nextScreenFromCurrentScreen = (currentScreen: Screen) => {
     case Screen.Start:
       return Screen.TickTheBox;
     case Screen.TickTheBox:
+      return Screen.Traditional;
+    case Screen.Traditional:
       return Screen.Start;
   }
 };
