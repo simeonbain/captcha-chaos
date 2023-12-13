@@ -5,6 +5,7 @@ import { TickTheBox } from "./screens/TickTheBox";
 import { Traditional } from "./screens/Traditional";
 import { Wally } from "./screens/Wally";
 import { TicTacToe } from "./screens/TicTacToe";
+import { GeoGuesser } from "./screens/GeoGuesser";
 
 function App() {
   const [screen, goToNextScreen] = useScreen();
@@ -14,8 +15,9 @@ function App() {
       {screen === Screen.Start && <Start goToNextScreen={goToNextScreen} />}
       {screen === Screen.TickTheBox && <TickTheBox goToNextScreen={goToNextScreen} />}
       {screen === Screen.Traditional && <Traditional goToNextScreen={goToNextScreen} />}
-      {screen === Screen.Wally && <Wally goToNextScreen={goToNextScreen} />}
       {screen === Screen.TicTacToe && <TicTacToe goToNextScreen={goToNextScreen} />}
+      {screen === Screen.Wally && <Wally goToNextScreen={goToNextScreen} />}
+      {screen === Screen.GeoGuesser && <GeoGuesser goToNextScreen={goToNextScreen} />}
     </>
   );
 }
