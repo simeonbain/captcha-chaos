@@ -1,8 +1,9 @@
 import { FunctionComponent, useState } from "react";
 import styled from "styled-components";
-import traditionalCaptchaText from "../assets/traditionalCaptchaText.jpeg";
+import wally from "../assets/wally.webp";
 import loadingIconLight from "../assets/icons/loadingIconLight.svg";
 import successIconLight from "../assets/icons/successIconLight.svg";
+import captchaPrivacyTermsLogo from "../assets/captchaPrivacyTermsLogo.svg";
 
 const Container = styled.div`
   display: flex;
@@ -18,20 +19,43 @@ const Captcha = styled.div`
   box-shadow: 0px 1px 10px 0px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+`;
+
+const WallyContainer = styled.div`
+  position: relative;
+  cursor: crosshair;
+`;
+
+const WallyImage = styled.img`
+  pointer-events: none;
+  max-width: 1000px;
+  display: block;
+`;
+
+const WallyMarker = styled.div<{ $x: number; $y: number }>`
+  width: 50px;
+  height: 50px;
+  border: 5px dashed hotpink;
+  box-sizing: border-box;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: ${({ $y }) => $y - 25}px;
+  left: ${({ $x }) => $x - 25}px;
 `;
 
 const Prompt = styled.div`
   color: #fff;
   background-color: #468ee5;
   padding: 24px 108px 69px 22px;
-  max-width: 256px;
   text-align: left;
+  border-bottom: 2px solid #d6d6d6;
 `;
 
-const Form = styled.form`
+const SubmitSection = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 0.5rem;
   border-top: 2px solid #d6d6d6;
 `;
@@ -41,6 +65,7 @@ const SubmitButton = styled.button`
   font-size: 14px;
   background-color: #468ee5;
   border-radius: 0;
+  height: 2.5em;
 `;
 
 const LoadingSpinner = styled.img`
@@ -70,24 +95,32 @@ enum CaptchaState {
   Complete
 }
 
-interface TraditionalProps {
+interface WallyProps {
   goToNextScreen: () => void;
 }
 
-export const Traditional: FunctionComponent<TraditionalProps> = ({ goToNextScreen }) => {
+export const Wally: FunctionComponent<WallyProps> = ({ goToNextScreen }) => {
   const [captchaState, setCaptchaState] = useState<CaptchaState>(CaptchaState.Initial);
-  const [inputValue, setInputValue] = useState("");
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
 
-  const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
-    const value = event.target.value;
-    setInputValue(value);
+  const handleClick: React.MouseEventHandler<HTMLDivElement> = (event) => {
+    const imageContainer = document.getElementById("wallyContainer");
+    if (!imageContainer) return;
+    const x = event.clientX - imageContainer.getBoundingClientRect().left;
+    const y = event.clientY - imageContainer.getBoundingClientRect().top;
+
+    setPosition({ x, y });
   };
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
+  const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = () => {
     setCaptchaState(CaptchaState.Loading);
     setTimeout(() => {
-      if (inputValue !== "uiguild4eva") {
+      if (!position) {
+        setCaptchaState(CaptchaState.Incorrect);
+        return;
+      }
+      const { x, y } = position;
+      if (x < 775 || x > 835 || y < 25 || y > 100) {
         setCaptchaState(CaptchaState.Incorrect);
         return;
       }
@@ -100,16 +133,19 @@ export const Traditional: FunctionComponent<TraditionalProps> = ({ goToNextScree
   return (
     <Container>
       <Captcha>
-        <Prompt>Type the characters shown in the image below.</Prompt>
-        <img src={traditionalCaptchaText}></img>
-        <Form onSubmit={handleSubmit}>
-          <input type="text" value={inputValue} onChange={handleChange} placeholder="Enter the characters"></input>
-          <SubmitButton type="submit">
+        <Prompt>Find Wally in the image below.</Prompt>
+        <WallyContainer id={"wallyContainer"} onClick={handleClick}>
+          <WallyImage src={wally}></WallyImage>
+          {position && <WallyMarker $x={position.x} $y={position.y} />}
+        </WallyContainer>
+        <SubmitSection>
+          <img src={captchaPrivacyTermsLogo} />
+          <SubmitButton onClick={handleSubmit}>
             {(captchaState === CaptchaState.Initial || captchaState === CaptchaState.Incorrect) && <span>Submit</span>}
             {captchaState === CaptchaState.Loading && <LoadingSpinner src={loadingIconLight} />}
             {captchaState === CaptchaState.Complete && <Tick src={successIconLight} />}
           </SubmitButton>
-        </Form>
+        </SubmitSection>
       </Captcha>
     </Container>
   );

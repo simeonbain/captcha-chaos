@@ -3,7 +3,8 @@ import { useState } from "react";
 export enum Screen {
   Start,
   TickTheBox,
-  Traditional
+  Traditional,
+  Wally
 }
 
 const nextScreenFromCurrentScreen = (currentScreen: Screen) => {
@@ -13,11 +14,13 @@ const nextScreenFromCurrentScreen = (currentScreen: Screen) => {
     case Screen.TickTheBox:
       return Screen.Traditional;
     case Screen.Traditional:
+      return Screen.Wally;
+    case Screen.Wally:
       return Screen.Start;
   }
 };
 
 export const useScreen = (): [Screen, () => void] => {
-  const [screen, setScreen] = useState(Screen.Start);
+  const [screen, setScreen] = useState(Screen.Wally);
   return [screen, () => setScreen(nextScreenFromCurrentScreen(screen))];
 };
